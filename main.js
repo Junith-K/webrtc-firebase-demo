@@ -78,8 +78,42 @@ for (let i = 0; i <= 60; i++) {
   fpsSelect.appendChild(option);
 }
 
+// Initialize Peer Connection and handle reconnection
+function initPeerConnection() {
+  pc = new RTCPeerConnection(servers);
+
+  pc.onicecandidate = (event) => {
+    event.candidate && offerCandidates.add(event.candidate.toJSON());
+  };
+
+  pc.ontrack = (event) => {
+    remoteStream.addTrack(event.track);
+  };
+
+  pc.onconnectionstatechange = () => {
+    if (pc.connectionState === "failed" || pc.connectionState === "disconnected") {
+      console.log("Connection failed or disconnected. Reconnecting...");
+      reconnectPeerConnection();
+    }
+  };
+}
+
+// Reconnect by reinitializing peer connection
+async function reconnectPeerConnection() {
+  if (localStream) {
+    localStream.getTracks().forEach((track) => track.stop());
+  }
+  remoteStream = new MediaStream();
+  initPeerConnection();
+  await startWebcam();
+}
+
 // 1. Setup media sources
 webcamButton.onclick = async () => {
+  await startWebcam();
+};
+
+async function startWebcam() {
   const resolution = document.getElementById("resolution").value.split("x");
   const width = parseInt(resolution[0]);
   const height = parseInt(resolution[1]);
@@ -105,7 +139,7 @@ webcamButton.onclick = async () => {
   } catch (error) {
     console.error("Error accessing media devices:", error);
   }
-};
+}
 
 // 2. Create an offer
 callButton.onclick = async () => {
