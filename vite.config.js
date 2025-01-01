@@ -1,14 +1,13 @@
-// vite.config.js
-import { defineConfig } from 'vite';
+const { defineConfig } = require('vite');
 
-export default defineConfig({
+module.exports = defineConfig({
   server: {
-    port: 8080, // Set your desired port here
+    port: 8080,
     hmr: {
-      overlay: false, // Disable the overlay to prevent unwanted reloads
-    }
+      overlay: false,
+    },
   },
   build: {
-    outDir: 'dist', // Default output directory
+    outDir: 'dist',
   },
 });
