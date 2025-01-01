@@ -7,5 +7,8 @@ export default defineConfig({
     hmr: {
       overlay: false, // Disable the overlay to prevent unwanted reloads
     }
-  }
+  },
+  build: {
+    outDir: 'dist', // Default output directory
+  },
 });
